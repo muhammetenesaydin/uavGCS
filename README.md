@@ -39,22 +39,38 @@ uavGCS-main/
    ```
    Ardından tarayıcınızda `http://localhost:5000` adresine gidin.
 
-## 🧪 Test ve Simülasyon
+## 🧪 Test ve Simülasyon (Docker ile)
 
-Bu yazılımı gerçek bir İHA olmadan **ArduPilot SITL** ve **Gazebo** kullanarak test edebilirsiniz:
+Bu projeyi gerçek donanım gerektirmeden, izole bir **Docker** ortamında test edebilirsiniz. Bilgisayarınıza ağır ROS paketleri kurmanıza gerek kalmaz.
 
-1. **ArduPilot SITL Kurulumu:** ArduPilot dünyasında yazılımı simüle etmek için kullanılır.
-   ```bash
-   cd ~/ardupilot/ArduPlane
-   sim_vehicle.py -v ArduPlane --console --map
-   ```
+### 1. Hazırlık
+Ekran erişimi için (Gazebo GUI'si için) şu komutu çalıştırın:
+```bash
+xhost +local:root
+```
 
-2. **Gazebo Entegrasyonu:** Görsel çevre ve kamera verisi için.
-   ```bash
-   ./simulasyon_baslat.sh
-   ```
+### 2. Simülasyonu Başlatma
+```bash
+cd docker/simulation
+docker compose up --build -d
+```
 
-3. **GCS Bağlantısı:** Yazılım varsayılan olarak `127.0.0.1:14550` portundan SITL'e bağlanır.
+### 3. Otopilot (SITL) Tetikleme
+Konteynerin içine girin ve İHA'nın sanal beynini başlatın:
+```bash
+docker exec -it uav_simulation bash
+# Konteyner içinde:
+sim_vehicle.py -v ArduPlane --console --map
+```
+
+### 4. Yazılımı Çalıştırma (Host Makinede)
+Artık simülasyon arka planda `127.0.0.1:14550` üzerinden yayın yapmaktadır. Ana makinenizde web arayüzünü başlatarak bağlanabilirsiniz:
+```bash
+python3 -m src.web.app
+```
+Ardından tarayıcıda `http://localhost:5000` adresine gidin.
+
+---
 
 ## 🎯 Yarışma Görevleri
 
